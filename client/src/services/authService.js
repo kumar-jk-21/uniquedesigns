@@ -1,0 +1,12 @@
+import api from './api.js';
+export const register = (formData) => api.post('/auth/register', formData);
+export const login = (identifier, password) => api.post('/auth/login', { identifier, password });
+export const adminLogin = (identifier, password) => api.post('/auth/admin-login', { identifier, password });
+export const logout = () => api.post('/auth/logout').catch(() => {});
+export const forgotPassword = (email) => api.post('/auth/forgot-password', { email });
+export const verifyOtp = (email, otp) => api.post('/auth/verify-otp', { email, otp });
+export const resetPassword = (body) => api.post('/auth/reset-password', body);
+export const getProfile = () => api.get('/users/profile');
+export const updateProfile = (body) => api.put('/users/profile', body);
+export const changePassword = (body) => api.put('/users/change-password', body);
+export const updateProfileImage = (formData) => api.post('/users/profile-image', formData);
