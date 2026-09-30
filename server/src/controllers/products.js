@@ -41,7 +41,6 @@ const bool = (v) =>
   v === 'true' ||
   v === 'on';
 
-
 /* =========================================================
    LIST PRODUCTS
 ========================================================= */
@@ -199,7 +198,6 @@ export const list = asyncH(async (req, res) => {
   );
 });
 
-
 /* =========================================================
    GET SINGLE PRODUCT
 ========================================================= */
@@ -229,7 +227,6 @@ export const getOne = asyncH(async (req, res) => {
     product: p
   });
 });
-
 
 /* =========================================================
    PARSE / VALIDATE PRODUCT DATA
@@ -415,7 +412,6 @@ async function parse(body, existing) {
   };
 }
 
-
 /* =========================================================
    UPLOAD MULTIPLE IMAGES TO CLOUDINARY
 ========================================================= */
@@ -460,12 +456,6 @@ async function uploadProductImages(files) {
     return uploaded;
 
   } catch (error) {
-
-    /* =====================================================
-       IMPORTANT:
-       SHOW ACTUAL CLOUDINARY ERROR IN TERMINAL
-    ===================================================== */
-
     console.error('');
     console.error(
       '============================================'
@@ -507,9 +497,7 @@ async function uploadProductImages(files) {
     );
     console.error('');
 
-    /* =====================================================
-       CLEANUP SUCCESSFULLY UPLOADED IMAGES
-    ===================================================== */
+    /* Cleanup successfully uploaded images */
 
     for (const image of uploaded) {
       try {
@@ -533,14 +521,12 @@ async function uploadProductImages(files) {
   }
 }
 
-
 /* =========================================================
    CREATE PRODUCT
 ========================================================= */
 
 export const create = asyncH(
   async (req, res) => {
-
     const files = req.files || [];
 
     verifyImages(files);
@@ -575,7 +561,6 @@ export const create = asyncH(
     let uploadedImages = [];
 
     try {
-
       /* Upload images to Cloudinary */
 
       uploadedImages =
@@ -613,7 +598,6 @@ export const create = asyncH(
       );
 
     } catch (error) {
-
       /* Cleanup Cloudinary images
          if database creation fails */
 
@@ -635,14 +619,12 @@ export const create = asyncH(
   }
 );
 
-
 /* =========================================================
    UPDATE PRODUCT
 ========================================================= */
 
 export const update = asyncH(
   async (req, res) => {
-
     const files = req.files || [];
 
     verifyImages(files);
@@ -692,7 +674,6 @@ export const update = asyncH(
     let uploadedImages = [];
 
     try {
-
       /* Upload newly selected images */
 
       uploadedImages =
@@ -734,7 +715,6 @@ export const update = asyncH(
       });
 
     } catch (error) {
-
       /* Cleanup uploaded Cloudinary images */
 
       for (const image of uploadedImages) {
@@ -755,14 +735,12 @@ export const update = asyncH(
   }
 );
 
-
 /* =========================================================
    DELETE PRODUCT
 ========================================================= */
 
 export const remove = asyncH(
   async (req, res) => {
-
     const p =
       await prisma.product.findUnique({
         where: {
@@ -792,16 +770,13 @@ export const remove = asyncH(
     /* Delete Cloudinary images */
 
     for (const image of p.images) {
-
       try {
-
         if (
           image.url &&
           image.url.includes(
             'res.cloudinary.com'
           )
         ) {
-
           const publicId =
             extractCloudinaryPublicId(
               image.url
@@ -813,9 +788,7 @@ export const remove = asyncH(
             );
           }
         }
-
       } catch (error) {
-
         console.error(
           'Cloudinary image deletion failed:',
           error?.message
@@ -830,14 +803,12 @@ export const remove = asyncH(
   }
 );
 
-
 /* =========================================================
    DELETE SINGLE PRODUCT IMAGE
 ========================================================= */
 
 export const removeImage =
   asyncH(async (req, res) => {
-
     const img =
       await prisma.productImage.findFirst({
         where: {
@@ -862,9 +833,7 @@ export const removeImage =
         'res.cloudinary.com'
       )
     ) {
-
       try {
-
         const publicId =
           extractCloudinaryPublicId(
             img.url
@@ -875,9 +844,7 @@ export const removeImage =
             publicId
           );
         }
-
       } catch (error) {
-
         console.error(
           'Cloudinary image deletion failed:',
           error?.message
@@ -899,15 +866,12 @@ export const removeImage =
     });
   });
 
-
 /* =========================================================
    CLOUDINARY PUBLIC ID HELPER
 ========================================================= */
 
 function extractCloudinaryPublicId(url) {
-
   try {
-
     const parsed =
       new URL(url);
 

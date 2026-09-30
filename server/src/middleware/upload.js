@@ -7,27 +7,15 @@ const MIME = {
   'image/webp': '.webp'
 };
 
-
-/* =========================================================
-   MEMORY STORAGE
-========================================================= */
-
 const storage = multer.memoryStorage();
-
-
-/* =========================================================
-   MULTER CREATOR
-========================================================= */
 
 const make = (maxFiles) => {
   return multer({
     storage,
-
     limits: {
       fileSize: 5 * 1024 * 1024,
       files: maxFiles
     },
-
     fileFilter: (_req, file, cb) => {
       if (MIME[file.mimetype]) {
         cb(null, true);
@@ -44,29 +32,14 @@ const make = (maxFiles) => {
   });
 };
 
+export const uploadProfile = make(1).single('profileImage');
 
-/* =========================================================
-   UPLOAD MIDDLEWARE
-========================================================= */
-
-export const uploadProfile =
-  make(1).single('profileImage');
-
-export const uploadProducts =
-  make(8).array('images', 8);
-
-
-/* =========================================================
-   REAL IMAGE SIGNATURE CHECK
-========================================================= */
+export const uploadProducts = make(8).array('images', 8);
 
 const sig = (buffer) => {
-
   if (!buffer || buffer.length < 12) {
     return false;
   }
-
-  /* JPEG */
 
   if (
     buffer[0] === 0xff &&
@@ -76,16 +49,12 @@ const sig = (buffer) => {
     return true;
   }
 
-  /* PNG */
-
   if (
     buffer[0] === 0x89 &&
     buffer.toString('ascii', 1, 4) === 'PNG'
   ) {
     return true;
   }
-
-  /* WEBP */
 
   if (
     buffer.toString('ascii', 0, 4) === 'RIFF' &&
@@ -97,19 +66,9 @@ const sig = (buffer) => {
   return false;
 };
 
-
-/* =========================================================
-   VERIFY IMAGES
-========================================================= */
-
 export function verifyImages(files = []) {
-
   for (const file of files) {
-
-    if (
-      !file.buffer ||
-      !Buffer.isBuffer(file.buffer)
-    ) {
+    if (!file.buffer || !Buffer.isBuffer(file.buffer)) {
       throw new AppError(
         400,
         'INVALID_FILE',
@@ -117,8 +76,7 @@ export function verifyImages(files = []) {
       );
     }
 
-    const buffer =
-      file.buffer.subarray(0, 12);
+    const buffer = file.buffer.subarray(0, 12);
 
     if (!sig(buffer)) {
       throw new AppError(
@@ -130,19 +88,11 @@ export function verifyImages(files = []) {
   }
 }
 
-
-/* =========================================================
-   LEGACY COMPATIBILITY
-   auth.js currently imports these exports.
-========================================================= */
-
+/* Compatibility exports */
 export const removeFiles = () => {
-  // Local file deletion is no longer required
-  // because images are uploaded to Cloudinary.
+  // Local file deletion is no longer required.
 };
 
 export const urlFor = (_folder, file) => {
-  // Kept temporarily for compatibility with
-  // existing controllers.
   return file?.path || '';
 };
